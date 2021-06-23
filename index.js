@@ -1,6 +1,9 @@
 //Parent element to store card
 const taskContainer = document.querySelector(".task__container");
-console.log(taskContainer);
+
+
+//Global store
+const globalStore = [];
 
 const newCard = ({id,imageUrl,taskTitle,taskType,taskDescription,}) => 
 `<div class="col-md-4 col-sm-8" id=${id}>
@@ -20,6 +23,25 @@ const newCard = ({id,imageUrl,taskTitle,taskType,taskDescription,}) =>
   </div>
 </div></div>`;
 
+
+const loadInitialTaskCards = () => {
+  //Access local Storage
+  const getInitalData = localStorage.getItem("tasky");
+  if(!getInitalData)
+    return;
+
+  //Convert Stringified-object to object
+  const {cards} = JSON.parse(getInitalData);
+
+  //map around the array to generate HTML card and inject it to DOM
+  cards.map((cardObject) => {
+    const createNewCard=newCard(cardObject);
+    taskContainer.insertAdjacentHTML("beforeend",createNewCard);
+    globalStore.push(cardObject);
+  });
+};
+
+
 const saveChanges = () => {
 	const taskData = {
 		id: `${Date.now()}`, //Unique number for card id
@@ -31,4 +53,21 @@ const saveChanges = () => {
 	const createNewCard = newCard(taskData);
 
 	taskContainer.insertAdjacentHTML("beforeend",createNewCard);
+  globalStore.push(taskData);
+
+  //Application programming inteface
+  //Localstorage -> interface ->programming
+  localStorage.setItem("tasky", JSON.stringify({cards: globalStore}));
+  //Key(tasky) -> Data
+
 };
+
+//Issues
+//Modal not closing upon adding new card   solved  
+//Cards vanished on refreshing ->localstorage (5mb)
+
+//Features
+//Open Task
+//Delete modal Feature
+//Edit Task
+
